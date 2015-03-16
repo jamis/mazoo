@@ -1,591 +1,278 @@
 (function(exports) {
 
-  Game = function(canvas) {
-    this.canvas = canvas;
-    this.active = true;
+  var Progression = {
+    easy: [
+      _ = [1,1,4,4], _, _, _,
+      [1,1,4,5], [1,1,4,6],
+      [1,1,4,4], // breather
+      _ = [1,1,5,5], _, _, _,
+      [1,1,4,4], // breather
+      [1,1,5,6], [1,1,5,7], 
+      _ = [1,1,6,6], _, _, _,
+      [1,1,5,5], // breather
+      [1,1,6,8], [1,1,6,10],
+      _ = [1,1,8,8], _, _, _,
+      [1,1,8,10], [1,1,8,12],
+      [1,1,6,6], // breather
+      _ = [1,1,10,10], _, _, _,
+      [1,1,10,12], [1,1,10,14],
+      [1,1,8,8], // breather
+      _ = [1,1,12,12], _, _, _,
+      [1,1,12,14], [1,1,12,16],
+      [1,1,10,10], // breather
+      [1,1,15,15]
+    ],
+
+    medium: [
+      [1,1,5,5], [1,1,5,7],
+      [1,1,6,6], [1,1,6,10],
+      [1,1,8,8], [1,1,8,12],
+      [1,1,10,10], [1,1,10,14],
+      [1,1,6,6], // breather
+      _ = [1,2,3,3], _, _, _,
+      [1,2,3,4], [1,2,3,5],
+      [1,1,10,10], // breather
+      _ = [1,2,4,4], _, _, _,
+      [1,2,4,5], [1,2,4,6],
+      [1,1,10,10], // breather
+      _ = [1,3,4,4], _, _, _,
+      [1,3,4,5], [1,3,4,6],
+      [1,1,12,12], // breather
+      _ = [1,3,5,5], _, _, _,
+      [1,1,12,12], // breather
+      _ = [2,2,3,3], _, _, _,
+      [2,2,3,4], [2,2,3,5],
+      [1,1,12,12], // breather
+      _ = [2,2,4,4], _, _, _,
+      [2,2,4,5], [2,2,4,6],
+      [1,1,15,15], // breather
+      [2,3,3,3], [3,2,3,3], [3,3,3,3],
+      _ = [3,3,3,3], _, _, _,
+      [3,3,3,4],
+      [3,4,4,4], [4,3,4,4], [4,4,4,4]
+    ],
+
+    hard: [
+      [1,2,3,3],[1,2,3,3],
+      [1,2,3,4],[1,2,3,4],
+      [1,2,4,4],[1,2,4,4],
+      [1,1,10,10],
+      [1,3,3,3],[1,3,3,4],[1,3,4,4],
+      _ = [2,2,3,3], _, _,
+      [1,1,10,10],
+      [2,2,3,4],[2,2,3,4],
+      _ = [2,2,4,4], _, _,
+      [1,1,10,10],
+      [2,3,3,3],[2,3,3,4],
+      _ = [2,3,4,4], _, _,
+      [1,1,10,10],
+      _ = [3,3,3,3], _, _,
+      [1,1,10,10],
+      [3,3,3,4],[3,3,4,4],[3,4,3,3],[3,4,3,4],
+      [3,4,4,4],[3,4,4,5],
+      [1,1,10,10],
+      _ = [4,4,3,3], _, _,
+      [4,4,3,4],[4,4,3,4]
+      [1,1,10,10],
+      _ = [4,4,4,4], _, _
+    ]
+  };
+
+  var Game = function(canvas_id) {
+    var self = this;
+
+    this.canvas = document.getElementById(canvas_id);
+    this.rand = new MersenneTwister;
+    this.board = new Board(this.canvas);
+
+    window.addEventListener("resize", function() { self.stretchCanvas(); });
+    this.stretchCanvas();
 
     var self = this;
-    document.body.addEventListener("keypress", function(event) {
-      self.onKeyPress(event);
-      event.preventDefault();
-    });
+    this.board.exitedMaze = function() { self.exitedMaze(); };
+    this.board.grabbedStar = function(effect) { self.grabbedStar(effect); };
+    this.board.acted = function() { self.userActed(); };
+    this.board.pausing = function() { self.userPausing(); };
+    this.board.unpausing = function() { self.userUnpausing(); };
 
-    this.canvas.addEventListener("mousedown", function(event) {
-      self.onMouseDown(event);
-      event.preventDefault();
-    });
-    this.canvas.addEventListener("mousemove", function(event) {
-      self.onMouseMove(event);
-      event.preventDefault();
-    });
-    this.canvas.addEventListener("mouseup", function(event) {
-      self.onMouseUp(event);
-      event.preventDefault();
-    });
+    this.score = 0;
+    this.stage = 0;
+    this.stageStars = 0;
+    this.duration = 60 * 1000;
+    this.bonusTime = 0;
 
-    this.canvas.addEventListener("touchstart", function(event) {
-      self.onTouchStart(event);
-      event.preventDefault();
-    });
-    this.canvas.addEventListener("touchmove", function(event) {
-      self.onTouchMove(event);
-      event.preventDefault();
-    });
-    this.canvas.addEventListener("touchend", function(event) {
-      self.onTouchEnd(event);
-      event.preventDefault();
-    });
+    this.levels = Progression.easy;
+    this.board.reset(this.gridForStage(this.stage));
+    this.board.refresh();
+
+    this.countdown();
+    this.refreshScore();
+    this.refreshStage();
+
+    var timeTag = document.getElementById('timeRemaining');
+    timeTag.addEventListener("click", function() { self.togglePause(); });
+
+    var aboutTag = document.getElementById('about');
+    aboutTag.addEventListener("click", function() { self.togglePause(); });
   }
 
-  Game.prototype.reset = function(grid) {
-    this.grid = grid;
-    this.recomputeMetrics();
+  Game.prototype.stretchCanvas = function() {
+    var canvas = document.getElementById("grid");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 50;
 
-    this.current = grid.at(0,0,0,0);
-
-    this.start = this.current.exit("west", "entrance.cell");
-    this.finish = grid.at(grid.worlds-1,grid.levels-1,grid.rows-1,grid.columns-1).exit("east", "exit.cell");
-
-    // initial path into maze
-    this.current.walk("west");
-
-    this.matrix = this.start.floodFromHere();
-    this.solution = this.matrix.pathTo(this.finish);
-
-    var deadEnds = grid.rand.shuffleCopy(grid.deadEnds());
-    /*
-    for(var i = 0; i < deadEnds.length; i++) {
-      deadEnds[i].distanceFromSolution = deadEnds[i].distanceFromPath(this.solution);
-    }
-
-    var orderedDeadEnds = deadEnds.sort(function(a, b) {
-      return b.distanceFromSolution - a.distanceFromSolution; });
-    */
-
-    for(var i = 0; i < 3; i++) {
-      if (i >= deadEnds.length) break;
-      deadEnds[i].hasStar = (i == 2 ? "time" : "score");
-    }
-  }
-
-  Game.prototype.hasFoundExit = function() {
-    return (this.current === this.finish);
+    this.board.recomputeMetrics();
+    this.board.refresh();
   }
 
   Game.prototype.exitedMaze = function() {
-    alert("You win!");
+    this.score += 5;
+    this.refreshScore();
+    this.advanceStage();
   }
 
-  Game.prototype.grabbedStar = function() {
-    alert("Grabbed star!");
-  }
+  Game.prototype.grabbedStar = function(effect) {
+    if (effect == "score") {
+      this.stageStars++;
+      this.score += this.stageStars * this.stageStars;
+      this.refreshScore();
 
-  Game.prototype.acted = function() {
-  }
-
-  Game.prototype.pausing = function() {
-  }
-
-  Game.prototype.unpausing = function() {
-  }
-
-  Game.prototype.recomputeMetrics = function() {
-    this.cellWidth = this.canvas.width /
-      (this.grid.columns * this.grid.levels + 0.5 * (this.grid.levels + 1) + 2);
-    this.cellHeight = this.canvas.height /
-      (this.grid.rows * this.grid.worlds + 0.5 * (this.grid.worlds + 1));
-
-    if (this.cellWidth > this.cellHeight)
-      this.cellWidth = this.cellHeight;
-    else if(this.cellHeight > this.cellWidth)
-      this.cellHeight = this.cellWidth;
-
-    this.marginX = this.cellWidth / 2;
-    this.marginY = this.cellHeight / 2;
-
-    this.levelWidth = this.grid.columns * this.cellWidth;
-    this.levelHeight = this.grid.rows * this.cellHeight;
-
-    this.worldWidth = this.levelWidth * this.grid.levels + (this.grid.levels + 1) * this.marginX;
-    this.universeHeight = this.levelHeight * this.grid.worlds + (this.grid.worlds + 1) * this.marginY;
-
-    this.offsetX = (this.canvas.width - this.worldWidth) / 2;
-    this.offsetY = (this.canvas.height - this.universeHeight) / 2;
-  }
-
-  Game.prototype.refresh = function() {
-    var PathColor = "#cfaf7f";
-
-    var ctx = this.canvas.getContext("2d");
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    ctx.lineCap = "round";
-    var lineWidth = Math.round(this.cellWidth * 0.05);
-    if (lineWidth < 1) lineWidth = 1;
-    ctx.lineWidth = lineWidth;
-
-    ctx.save();
-    ctx.translate(this.offsetX, this.offsetY);
-
-    var self = this;
-
-    var position = function(cell) {
-      var x = Math.floor(self.marginX +
-        (cell.level * (self.levelWidth + self.marginX)) +
-        self.cellWidth * cell.column);
-      var y = Math.floor(self.marginY +
-        (cell.world * (self.levelHeight + self.marginY)) +
-        self.cellHeight * cell.row);
-
-      return { x: x, y: y };
-    }
-
-    if (!this.hasFoundExit()) {
-      // == highlight current cell ==
-      var pos = position(this.current);
-      ctx.fillStyle= "#ffffdf";
-      ctx.fillRect(pos.x, pos.y, this.cellWidth, this.cellHeight);
-
-      // == highlight adjacent cells ==
-      ctx.fillStyle= "#fafadf";
-      var exits = this.current.links();
-      for(var i = 0; i < exits.length; i++) {
-        var pos;
-
-        if (exits[i] == this.finish) {
-          pos = position(exits[i].links()[0]);
-          pos.x += this.cellWidth;
-        } else if (exits[i] == this.start) {
-          pos = position(exits[i].links()[0]);
-          pos.x -= this.cellWidth;
-        } else {
-          pos = position(exits[i]);
-        }
-
-        ctx.fillRect(pos.x, pos.y, this.cellWidth, this.cellHeight);
-      }
-    }
-
-    // ==== starting point ===
-    var pos = position(this.start.links()[0]);
-    ctx.save();
-      ctx.strokeStyle = PathColor;
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(pos.x-this.cellWidth/2, pos.y+this.cellHeight/2);
-      ctx.lineTo(pos.x, pos.y+this.cellHeight/2);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.strokeStyle = PathColor;
-      ctx.fillStyle = "#7f5f3f";
-      ctx.arc(pos.x-this.cellWidth/2, pos.y+this.cellHeight/2, this.cellWidth/4, 0, 2*Math.PI);
-      ctx.fill();
-      ctx.stroke();
-    ctx.restore();
-
-    // ==== exit point ===
-    var pos = position(this.finish.links()[0]);
-    ctx.save();
-      ctx.beginPath();
-      ctx.strokeStyle = PathColor;
-      ctx.fillStyle = "#7f5f3f";
-      ctx.arc(pos.x+1.5*this.cellWidth, pos.y+this.cellHeight/2, this.cellWidth/4, 0, 2*Math.PI);
-      ctx.fill();
-      ctx.stroke();
-    ctx.restore();
-
-    this.grid.eachCell(function(cell) {
-      var pos = position(cell);
-      var x = pos.x;
-      var y = pos.y;
-
-      // === draw cell boundary walls ===
-      ctx.beginPath();
-      ctx.strokeStyle = "#000000";
-
-        if (!cell.west) {
-          ctx.moveTo(x+0.5, y);
-          ctx.lineTo(x+0.5, y+self.cellHeight);
-        }
-
-        if (!cell.north) {
-          ctx.moveTo(x, y+0.5);
-          ctx.lineTo(x+self.cellWidth, y+0.5);
-        }
-
-        if (!cell.isLinkedTo(cell.east)) {
-          ctx.moveTo(Math.floor(x+self.cellWidth)+0.5, y);
-          ctx.lineTo(Math.floor(x+self.cellWidth)+0.5, y+self.cellHeight);
-        }
-
-        if (!cell.isLinkedTo(cell.south)) {
-          ctx.moveTo(x, Math.floor(y+self.cellHeight)+0.5);
-          ctx.lineTo(x+self.cellWidth, Math.floor(y+self.cellHeight)+0.5);
-        }
-
-      ctx.stroke();
-
-      var insetX = self.cellWidth * 0.15;
-      var insetY = self.cellHeight * 0.15;
-
-      var x1 = x + insetX;
-      var x2 = x + 2*insetX;
-      var xm = x + self.cellWidth / 2;
-      var x3 = x + self.cellWidth - 2*insetX;
-      var x4 = x + self.cellWidth - insetX;
-
-      var y1 = y + insetY;
-      var y2 = y + 2*insetY;
-      var ym = y + self.cellHeight / 2;
-      var y3 = y + self.cellWidth - 2*insetY;
-      var y4 = y + self.cellWidth - insetY;
-
-      // === draw path through maze ===
-      if (cell.isWalked()) {
-        ctx.save();
-        ctx.strokeStyle = PathColor;
-        ctx.lineCap = "round";
-
-        ctx.beginPath();
-        ctx.lineWidth = 4;
-
-          if (cell.hasWalked("east")) {
-            ctx.moveTo(xm, ym);
-            ctx.lineTo(x + self.cellWidth, ym);
-          }
-
-          if (cell.hasWalked("west")) {
-            ctx.moveTo(x, ym);
-            ctx.lineTo(xm, ym);
-          }
-
-          if (cell.hasWalked("north")) {
-            ctx.moveTo(xm, y);
-            ctx.lineTo(xm, ym);
-          }
-
-          if (cell.hasWalked("south")) {
-            ctx.moveTo(xm, ym);
-            ctx.lineTo(xm, y + self.cellHeight);
-          }
-
-          if (cell.hasWalked("down")) {
-            ctx.moveTo(xm, ym);
-            ctx.lineTo(x2, ym);
-          }
-
-          if (cell.hasWalked("up")) {
-            ctx.moveTo(xm, ym);
-            ctx.lineTo(x3, ym);
-          }
-
-          if (cell.hasWalked("hither")) {
-            ctx.moveTo(xm, y2);
-            ctx.lineTo(xm, ym);
-          }
-
-          if (cell.hasWalked("yon")) {
-            ctx.moveTo(xm, ym);
-            ctx.lineTo(xm, y3);
-          }
-
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // === draw up/down and hither/yon arrows ===
-      ctx.beginPath();
-      ctx.strokeStyle = "#ff7f7f";
-      ctx.fillStyle = "#ff7f7f";
-
-        if (cell.isLinkedTo(cell.down)) {
-          ctx.moveTo(x2, y2);
-          ctx.lineTo(x2, y3);
-          ctx.lineTo(x1, ym);
-          ctx.closePath();
-        }
-
-        if (cell.isLinkedTo(cell.up)) {
-          ctx.moveTo(x3, y2);
-          ctx.lineTo(x3, y3);
-          ctx.lineTo(x4, ym);
-          ctx.closePath();
-        }
-
-        if (cell.isLinkedTo(cell.hither)) {
-          ctx.moveTo(x2, y2);
-          ctx.lineTo(x3, y2);
-          ctx.lineTo(xm, y1);
-          ctx.closePath();
-        }
-
-        if (cell.isLinkedTo(cell.yon)) {
-          ctx.moveTo(x2, y3);
-          ctx.lineTo(x3, y3);
-          ctx.lineTo(xm, y4);
-          ctx.closePath();
-        }
-
-      ctx.fill();
-      ctx.stroke();
-
-      // === draw star ===
-      if (cell.hasStar) {
-        ctx.beginPath();
-        if (cell.hasStar == "score") {
-          ctx.fillStyle = "#ffff00";
-          ctx.strokeStyle = "#afaf00";
-        } else {
-          ctx.fillStyle = "#0000ff";
-          ctx.strokeStyle = "#0000af";
-        }
-        var radius = self.cellWidth / 8;
-        var points = 5;
-        var inc = Math.PI / points;
-        for(var point = 0; point < points; point++) {
-          var outerX = xm + 2 * radius * Math.cos(inc*2*point);
-          var outerY = ym + 2 * radius * Math.sin(inc*2*point);
-          var innerX = xm + 0.75 * radius * Math.cos(inc*(2*point+1));
-          var innerY = ym + 0.75 * radius * Math.sin(inc*(2*point+1));
-
-          if (point == 0)
-            ctx.moveTo(outerX, outerY);
-          else
-            ctx.lineTo(outerX, outerY);
-
-          ctx.lineTo(innerX, innerY);
-        }
-
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-      }
-
-      // === draw current cell indicator ===
-      if (cell === self.current) {
-        ctx.beginPath();
-        ctx.fillStyle = PathColor;
-        ctx.arc(xm, ym, self.cellWidth/8, 0, 2*Math.PI);
-        ctx.fill();
-      }
-    });
-
-    ctx.restore();
-  }
-
-  Game.prototype.solve = function(start, finish) {
-    start = start || this.start;
-    finish = finish || this.finish;
-
-    var matrix = start.floodFromHere();
-    var path = matrix.pathTo(finish);
-
-    for(var i = 0; i < path.length-1; i++) {
-      var exits = path[i].exits();
-      var found = false;
-
-      for(direction in exits) {
-        if (exits[direction] == path[i+1]) {
-          path[i].walk(direction);
-          path[i+1].walk(Opposite[direction]);
-          break;
-        }
-      }
+    } else if (effect == "time") {
+      this.bonusTime += 10;
     }
   }
 
-  Game.prototype.goTo = function(cell) {
-    var exits = this.current.exits();
-    for(var direction in exits) {
-      if (cell === exits[direction]) {
-        this.go(direction);
+  Game.prototype.userActed = function() {
+    if (!this.timer) {
+      this.started = this.started || Date.now();
+
+      var self = this;
+      this.timer = window.setInterval(function() { self.countdown(); }, 100);
+    }
+  }
+
+  Game.prototype.userPausing = function() {
+    this.pausedAfter = this.elapsedTime();
+    window.clearInterval(this.timer);
+    delete(this.timer);
+    var div = document.getElementById("pauseCover");
+    var rect = this.canvas.getBoundingClientRect();
+    div.style.top = rect.top;
+    div.style.left = rect.left;
+    div.style.width = rect.width;
+    div.style.height = rect.height;
+    this.canvas.className = "hide";
+    div.className = "show";
+  }
+
+  Game.prototype.userUnpausing = function() {
+    var div = document.getElementById("pauseCover");
+    div.className = "hide";
+    this.canvas.className = "show";
+    this.bonusTime = 0;
+    this.started = Date.now() - this.pausedAfter;
+    this.userActed();
+  }
+
+  Game.prototype.gameOver = function() {
+    window.clearInterval(this.timer);
+    this.active = false;
+
+    this.canvas.style.opacity = 0.25;
+    var timeTag = document.getElementById("timeRemaining");
+    timeTag.innerHTML = "TIME UP";
+
+    var blinkIntervals = [1, 0.5];
+    var blink = -1;
+
+    var blinkFn = function() {
+      blink += 1;
+
+      if (blink % 2 == 0)
+        timeTag.style.display = "block";
+      else
+        timeTag.style.display = "none";
+
+      setTimeout(blinkFn, blinkIntervals[blink % blinkIntervals.length] * 1000);
+    };
+
+    blinkFn();
+  }
+
+  Game.prototype.elapsedTime = function() {
+    return Date.now() - this.started - this.bonusTime * 1000;
+  }
+
+  Game.prototype.countdown = function() {
+    label = "1:00.0";
+    var timeTag = document.getElementById("timeRemaining");
+
+    if (this.started) {
+      var elapsed = this.elapsedTime();
+      var remaining = Math.round((this.duration - elapsed) / 100);
+
+      if (remaining < 0) {
+        this.gameOver();
         return;
+      } else if (remaining < 100) {
+        timeTag.className = "alert";
+      } else if (remaining < 300) {
+        timeTag.className = "warning";
+      } else {
+        timeTag.className = "";
       }
-    }
-  }
 
-  Game.prototype.go = function(direction) {
-    if (this.active && this.current !== this.finish) {
-      var target = this.current[direction];
+      var tenths = remaining % 10;
+      var seconds = Math.floor(remaining / 10) % 60;
+      var minutes = Math.floor(remaining / 600)
 
-      if (this.current.isLinkedTo(target) && target !== this.start) {
-        if (this.current.hasWalked(direction)) {
-          this.current.unwalk(direction);
-          target.unwalk(Opposite[direction]);
-        } else {
-          this.current.walk(direction);
-          target.walk(Opposite[direction]);
-        }
-
-        this.current = target;
-
-        if (this.current.hasStar) {
-          this.grabbedStar(this.current.hasStar);
-          delete(this.current.hasStar);
-        }
-
-        this.refresh();
-
-        this.acted();
-        if (this.hasFoundExit())
-          this.exitedMaze();
-      }
-    }
-  }
-
-  Game.prototype.togglePause = function() {
-    if (this.paused) {
-      this.paused = false;
-      this.unpausing();
-    } else if (this.active) {
-      this.paused = true;
-      this.pausing();
-    }
-  }
-
-  Game.prototype.onKeyPress = function(event) {
-    var self = this;
-    var char;
-
-    if (event.which == null) {
-      char = String.fromCharCode(event.keyCode) // IE
-    } else if (event.which!=0 && event.charCode!=0) {
-      char = String.fromCharCode(event.which)   // the rest
-    } else {
-      return;
+      label = "" + tenths;
+      label = "" + seconds + "." + label;
+      while (label.length < 4) label = "0" + label;
+      label = "" + minutes + ":" + label;
     }
 
-    switch(char) {
-      case " ": this.togglePause(); break;
-
-      case "a": this.go("west"); break;
-      case "d": this.go("east"); break;
-      case "w": this.go("north"); break;
-      case "s": this.go("south"); break;
-
-      case "j": this.go("down"); break;
-      case "l": this.go("up"); break;
-      case "i": this.go("hither"); break;
-      case "k": this.go("yon"); break;
-    }
+    timeTag.innerHTML = "[" + label + "]";
   }
 
-  Game.prototype.emulateMouseEvent = function(event, type) {
-    var first = event.changedTouches[0];
-
-    var mouseEvent = new MouseEvent(type,
-      { pageX: first.pageX, pageY: first.pageY,
-        clientX: first.clientX, clientY: first.clientY,
-        ctrlKey: false, shiftKey: false, altKey: false,
-        metaKey: false, button: 0 });
-
-    this.canvas.dispatchEvent(mouseEvent);
+  Game.prototype.refreshScore = function() {
+    var scoreTag = document.getElementById("score");
+    scoreTag.innerHTML = this.score;
   }
 
-  Game.prototype.onTouchStart = function(event) {
-    this.emulateMouseEvent(event, 'mousedown');
+  Game.prototype.refreshStage = function() {
+    var stageTag = document.getElementById("stage");
+    stageTag.innerHTML = this.stage + 1;
   }
 
-  Game.prototype.onTouchEnd = function(event) {
-    this.emulateMouseEvent(event, 'mouseup');
+  Game.prototype.gridForStage = function(stage) {
+    if (stage >= this.levels.length) stage = this.levels.length-1;
+
+    var size = this.levels[stage];
+    var swap = (size[3] > size[2]) && this.rand.flipCoin();
+    var grid = new Grid(this.rand,
+      size[0], size[1],
+      swap ? size[3] : size[2],
+      swap ? size[2] : size[3]);
+    grid.growingTreeMix(0.25);
+
+    return grid;
   }
 
-  Game.prototype.onTouchMove = function(event) {
-    this.emulateMouseEvent(event, 'mousemove');
+  Game.prototype.advanceStage = function() {
+    this.stage++;
+    this.stageStars = 0;
+    this.board.reset(this.gridForStage(this.stage));
+    this.board.refresh();
+    this.refreshStage();
   }
 
-  Game.prototype.onMouseDown = function(event) {
-    this.touchStartX = event.pageX;
-    this.touchStartY = event.pageY;
-    this.mightBeTap = true;
+  Game.prototype.jumpToStage = function(stage) {
+    this.stage = stage - 2;
+    if (this.stage < -1) this.stage = -1;
+    this.advanceStage();
   }
 
-  Game.prototype.onMouseMove = function(event) {
-    if (this.touchStartX) {
-      var dx = event.pageX - this.touchStartX;
-      var dy = event.pageY - this.touchStartY;
-
-      var mx = Math.abs(dx);
-      var my = Math.abs(dy);
-
-      if (this.mightBeTap && (mx > this.cellWidth*0.75 || my > this.cellHeight*0.75))
-        this.mightBeTap = false;
-
-      if (!this.mightBeTap) {
-        this.touchStartX = event.pageX;
-        this.touchStartY = event.pageY;
-
-        var pos = this.cellToPage(this.current);
-        pos.x += this.cellWidth / 2;
-        pos.y += this.cellHeight / 2;
-
-        var dx = this.touchStartX - pos.x;
-        var dy = this.touchStartY - pos.y;
-
-        if (Math.sqrt(dx*dx + dy*dy) > 2*this.cellWidth)
-          return;
-
-        if (Math.abs(dx) > Math.abs(dy)) {
-          var threshold = this.cellWidth * 0.5;
-          if (dx < -threshold)
-            this.go("west");
-          else if(dx > threshold)
-            this.go("east");
-        } else {
-          var threshold = this.cellHeight * 0.5;
-          if (dy < -threshold)
-            this.go("north");
-          else if(dy > threshold)
-            this.go("south");
-        }
-      }
-    }
-  }
-
-  Game.prototype.cellToPage = function(cell) {
-    var x = this.cellWidth * cell.column;
-    var y = this.cellHeight * cell.row;
-
-    x += this.marginX + cell.level * (this.levelWidth + this.marginX);
-    y += this.marginY + cell.world * (this.levelHeight + this.marginY);
-
-    x += this.offsetX + this.canvas.offsetLeft;
-    y += this.offsetY + this.canvas.offsetTop;
-
-    return {x:x, y:y};
-  }
-
-  Game.prototype.pageToLevel = function(pageX, pageY) {
-    var rootX = pageX - this.canvas.offsetLeft - this.offsetX;
-    var rootY = pageY - this.canvas.offsetTop - this.offsetY;
-
-    var level = Math.floor((rootX - this.marginX) / (this.levelWidth + this.marginX));
-    var world = Math.floor((rootY - this.marginY) / (this.levelHeight + this.marginY));
-
-    var x = rootX - this.marginX - (level * (this.levelWidth + this.marginX));
-    var y = rootY - this.marginX - (world * (this.levelHeight + this.marginY));
-
-    return {world:world, level:level, x:x, y:y};
-  }
-
-  Game.prototype.cellAt = function(pageX, pageY) {
-    var pos = this.pageToLevel(pageX, pageY);
-
-    var row = Math.floor(pos.y / this.cellHeight);
-    var column = Math.floor(pos.x / this.cellWidth);
-
-    return this.grid.at(pos.world, pos.level, row, column) || this.finish;
-  }
-
-  Game.prototype.onMouseUp = function(event) {
-    if (this.mightBeTap) {
-      var cell = this.cellAt(event.pageX, event.pageY);
-      this.goTo(cell);
-    }
-
-    delete(this.touchStartX);
-    delete(this.touchStartY);
-  }
+  exports.Game = Game;
 
 })(this);

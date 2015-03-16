@@ -1,6 +1,6 @@
 (function(exports) {
 
-  Cell = function (rand, world, level, row, column) {
+  var Cell = function (rand, world, level, row, column) {
     this.rand = rand;
     this.world = world;
     this.level = level;

@@ -1,6 +1,6 @@
 (function(exports) {
 
-  WeightMatrix = function(root) {
+  var WeightMatrix = function(root) {
     this.root = root;
     this.heaviest = null;
     this.maximumWeight = 0;

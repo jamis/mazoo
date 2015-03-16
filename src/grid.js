@@ -1,7 +1,7 @@
 (function(exports) {
 
-  Grid = function (worlds, levels, rows, columns) {
-    this.rand = new MersenneTwister;
+  var Grid = function (rand, worlds, levels, rows, columns) {
+    this.rand = rand;
     this.worlds = worlds;
     this.levels = levels;
     this.rows = rows;
