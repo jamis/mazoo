@@ -78,7 +78,7 @@
     ]
   };
 
-  var Game = function(canvas_id) {
+  var Game = function(canvas_id, difficulty) {
     var self = this;
 
     this.canvas = document.getElementById(canvas_id);
@@ -88,6 +88,12 @@
     window.addEventListener("resize", function() { self.stretchCanvas(); });
     this.stretchCanvas();
 
+    var timeTag = document.getElementById('timeRemaining');
+    timeTag.addEventListener("click", function() { self.togglePause(); });
+
+    var aboutTag = document.getElementById('about');
+    aboutTag.addEventListener("click", function() { self.togglePause(); });
+
     var self = this;
     this.board.exitedMaze = function() { self.exitedMaze(); };
     this.board.grabbedStar = function(effect) { self.grabbedStar(effect); };
@@ -95,25 +101,30 @@
     this.board.pausing = function() { self.userPausing(); };
     this.board.unpausing = function() { self.userUnpausing(); };
 
+    this.resetGame(difficulty);
+  }
+
+  Game.prototype.resetGame = function(difficulty) {
+    if (this.timer) {
+      window.clearInterval(this.timer);
+      delete(this.timer);
+    }
+
+    this.difficulty = difficulty;
+
     this.score = 0;
     this.stage = 0;
     this.stageStars = 0;
     this.duration = 60 * 1000;
     this.bonusTime = 0;
 
-    this.levels = Progression.easy;
+    this.levels = Progression[difficulty];
     this.board.reset(this.gridForStage(this.stage));
     this.board.refresh();
 
     this.countdown();
     this.refreshScore();
     this.refreshStage();
-
-    var timeTag = document.getElementById('timeRemaining');
-    timeTag.addEventListener("click", function() { self.togglePause(); });
-
-    var aboutTag = document.getElementById('about');
-    aboutTag.addEventListener("click", function() { self.togglePause(); });
   }
 
   Game.prototype.stretchCanvas = function() {
@@ -176,7 +187,6 @@
 
   Game.prototype.gameOver = function() {
     window.clearInterval(this.timer);
-    this.active = false;
 
     this.canvas.style.opacity = 0.25;
     var timeTag = document.getElementById("timeRemaining");
