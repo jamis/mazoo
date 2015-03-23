@@ -1,21 +1,33 @@
 (function(exports) {
 
   var Interface = function() {
-    var choices = document.getElementsByClassName("choices")[0];
     var self = this;
 
     this.currentGame = null;
     this.currentPanel = document.getElementById("intro");
 
+    var choices = document.getElementsByClassName("choices")[0];
     choices.addEventListener("click",
       function(event) { self.choiceClicked(event); });
+
+    var info = document.getElementById("info");
+    info.addEventListener("click",
+      function(event) { self.doneClicked(event); });
   }
 
   Interface.prototype.selectPanel = function(panel) {
+    this.previousPanel = this.currentPanel;
     this.currentPanel.style.display = "none";
     panel.style.display = "block";
 
     this.currentPanel = panel;
+  }
+
+  Interface.prototype.doneClicked = function(event) {
+    if (event.target.className.match(/\bdone\b/)) {
+      event.preventDefault();
+      this.selectPanel(this.previousPanel);
+    }
   }
 
   Interface.prototype.choiceClicked = function(event) {
@@ -26,13 +38,19 @@
       case "opt-medium":
       case "opt-hard":
         var difficulty = event.target.className.slice(4);
-        this.currentGame = new Game("grid", difficulty);
+
+        if (this.currentGame) {
+          this.currentGame.resetGame(difficulty);
+        } else {
+          this.currentGame = new Game("grid", difficulty);
+        }
 
         var board = document.getElementById("board");
         this.selectPanel(board);
         break;
-      case "opt-about":
-        alert("FIXME");
+      case "opt-info":
+        var info = document.getElementById("info");
+        this.selectPanel(info);
         break;
     }
   }

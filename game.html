@@ -14,7 +14,7 @@
     .container .body {
       width: 50%;
       min-width: 480px;
-      margin: 0 auto;
+      margin: 25pt auto;
     }
 
     #pauseCover {
@@ -76,6 +76,11 @@
       color: #5f3f1f;
     }
 
+    .navigation {
+      margin-top: 5pt;
+      font-size: 10pt;
+    }
+
     #timeRemaining {
       font-size: 40px;
       margin: 5px 0;
@@ -116,18 +121,37 @@
       display: none;
     }
 
+    .panel p {
+      font-size: 14pt;
+    }
+
+    .panel p.gotit {
+      text-align: center;
+      font-size: 18pt;
+    }
+
+    .panel p.byline {
+      text-align: right;
+      font-style: italic;
+    }
+
     .panel#intro {
       display: block;
     }
 
-    .panel#intro h1 {
+    .panel h1 {
       text-align: center;
       margin-top: 25pt;
     }
 
-    .panel#intro h2 {
+    .panel h2 {
+      margin-top: 25pt;
       text-align: center;
+    }
+
+    .panel h2.subtitle {
       font-weight: normal;
+      margin-top: 0;
       margin-bottom: 25pt;
     }
 
@@ -142,19 +166,19 @@
 
     ul.choices a {
       display: block;
-      background: #ffcccc;
-      border: 1px solid red;
+      background: #c4aa76;
+      border: 2px solid #5f3f1f;
       border-radius: 10px;
       padding: 10pt;
       text-align: center;
-      color: #7f0000;
+      color: #5f3f1f;
       text-decoration: none;
       font-size: 150%;
       font-weight: bold;
     }
 
     ul.choices a:hover {
-      background: #efaaaa;
+      background: #a48a56;
     }
   </style>
 
@@ -168,24 +192,92 @@
   <script src="src/interface.js" type="text/javascript"></script>
 </head>
 <body>
-  <div class="panel" id="intro">
-    <div class="container">
+  <div class="container">
+    <div class="panel" id="intro">
       <div class="body">
         <h1><img src="images/mazoo-logo.png" width="397" height="196" alt="Mazoo!" title="Mazoo!" /></h1>
-        <h2>A Game of Twisty Little Passages</h2>
+        <h2 class="subtitle">A Game of Twisty Little Passages</h2>
 
         <ul class="choices">
           <li><a href="#" class="opt-easy"  >Easy</a></li>
           <li><a href="#" class="opt-medium">Medium</a></li>
           <li><a href="#" class="opt-hard"  >Hard</a></li>
-          <li><a href="#" class="opt-about" >About Mazoo!</a></li>
+          <li><a href="#" class="opt-info"  >About Mazoo!</a></li>
         </ul>
       </div>
     </div>
-  </div>
 
-  <div class="panel" id="board">
-    <div class="container">
+    <div class="panel" id="info">
+      <div class="body">
+        <div class="navigation"><a href="#" class="done">&larr; back</a></div>
+
+        <p>Mazoo is a maze game. The goal is to traverse as many mazes
+          as you can, accumulating as many points as possible along the
+          way. You have sixty seconds in which to accomplish this task.</p>
+
+        <p>Along the way, you'll encounter yellow stars and blue stars.
+          The first yellow star in each level gives you one extra point.
+          The second gives you four points. The blue star will add an
+          extra ten seconds to your time limit.</p>
+
+        <p>Finishing a maze gives you five points.</p>
+
+        <h2>How to Play</h2>
+
+        <p>You can either use the mouse, your finger (if on a touchscreen),
+          or the keyboard.</p>
+
+        <p>If using the mouse or touchscreen, simply drag the cursor
+          through the maze. You can also tap any highlighted square to
+          be moved there. (This is particularly handy on the 3D and 4D
+          levels, to navigate the stairs/portals.)</p>
+
+        <p>If using the keyboard, <code>wasd</code> is your friend.
+          The <code>w</code> and <code>s</code> keys move you (respectively)
+          up and down, and <code>a</code> and <code>d</code> move you
+          left and right. On the 3D and 4D levels, <code>i</code> and
+          <code>k</code> move you vertically between levels, and
+          <code>j</code> and <code>k</code> move you horizontally.
+          (The <code>ijkl</code> keys will only work when you are
+          positioned on one of the red pointers.)</p>
+
+        <p>If that's all you needed to know,
+          <a href="#" class="done">go ahead and return to the menu</a>!</p>
+
+        <h2>How does this thing work?</h2>
+
+        <p>The mazes are generated using the
+          <a href="http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm">Growing Tree algorithm</a>,
+          choosing the last cell 75% of the time, and the most heavily weighted
+          cell the other 25% of the time.</p>
+
+        <p>If you're curious about the implementation, the source code
+          for Mazoo! is available on GitHub, here:</p>
+
+        <p><a href="https://github.com/jamis/mazoo">https://github.com/jamis/mazoo</a></p>
+
+        <h2>Where can I learn more?</h2>
+
+        <p>I wrote a series of articles on the topic of random mazes a
+          few years ago. They are summarized here:</p>
+
+        <p><a href="http://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap">http://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap</a></p>
+
+        <p>I've also written a book, "Mazes for Programmers", which
+          goes into the topic at greater length, and includes projects
+          and source code and all kinds of fascinating things!</p>
+
+        <p><a href="https://pragprog.com/book/jbmaze/mazes-for-programmers">https://pragprog.com/book/jbmaze/mazes-for-programmers</a></p>
+
+        <p>Cheers!</p>
+
+        <p class="byline">Jamis Buck<br />
+          <a href="mailto:jamis@jamisbuck.org">jamis@jamisbuck.org</a><br />
+          <a href="http://twitter.com/jamis">@jamis</a></p>
+      </div>
+    </div>
+
+    <div class="panel" id="board">
       <canvas id="grid" width="500" height="500"></canvas>
       <div id="pauseCover">
         <div class="instructions">
@@ -236,22 +328,22 @@
           <h2>Move via mouse/touch&hellip;</h2>
         </div>
       </div>
-    </div>
 
-    <div class="footer">
-      <div class="score">score&nbsp;<span id="score"></span></div>
-      <div class="stage"><span id="stage"></span>&nbsp;stage</div>
-      <div id="timeRemaining"></div>
-    </div>
+      <div class="footer">
+        <div class="score">score&nbsp;<span id="score"></span></div>
+        <div class="stage"><span id="stage"></span>&nbsp;stage</div>
+        <div id="timeRemaining"></div>
+      </div>
 
-    <div id="about" class="about">
-      <strong>Pause for instructions</strong><br />
-      Press space, or tap the timer
-    </div>
+      <div id="about" class="about">
+        <strong>Pause for instructions</strong><br />
+        Press space, or tap the timer
+      </div>
 
-    <div class="ad">
-      <strong>Curious about random mazes?</strong><br />
-      <a href="https://pragprog.com/book/jbmaze/mazes-for-programmers">Check out my book!</a>
+      <div class="ad">
+        <strong>Curious about random mazes?</strong><br />
+        <a href="https://pragprog.com/book/jbmaze/mazes-for-programmers">Check out my book!</a>
+      </div>
     </div>
   </div>
 </body>
