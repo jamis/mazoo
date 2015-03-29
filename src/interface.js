@@ -19,9 +19,12 @@
       }
     }
 
-    var operations = document.getElementsByClassName("operations")[0];
-    operations.addEventListener("click",
-      function(event) { self.operationClicked(event); });
+    var lists = document.getElementsByClassName("operations");
+    for(var i = 0; i < lists.length; i++) {
+      var operations = lists[i];
+      operations.addEventListener("click",
+        function(event) { self.operationClicked(event); });
+    }
   }
 
   Interface.prototype.selectPanel = function(panel) {
@@ -46,6 +49,9 @@
     switch(operation) {
       case "resume":
         this.currentGame.board.togglePause();
+        break;
+      case "restart":
+        this.currentGame.resetGame(this.currentGame.difficulty);
         break;
       case "quit":
         this.selectPanel(document.getElementById("intro"));

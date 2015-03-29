@@ -116,6 +116,7 @@
     }
 
     this.resetPauseUI();
+    this.resetGameOverUI();
 
     this.canvas.style.opacity = 1.0;
     this.difficulty = difficulty;
@@ -191,6 +192,11 @@
     this.canvas.className = "show";
   }
 
+  Game.prototype.resetGameOverUI = function() {
+    var div = document.getElementById("gameOverCover");
+    div.className = "hide";
+  }
+
   Game.prototype.userUnpausing = function() {
     this.resetPauseUI();
     this.bonusTime = 0;
@@ -201,6 +207,25 @@
   Game.prototype.gameOver = function() {
     window.clearInterval(this.timer);
     delete(this.timer);
+
+    var div = document.getElementById("gameOverCover");
+    var rect = this.canvas.getBoundingClientRect();
+    var width = 700;
+    div.style.top = rect.top + 50;
+    div.style.left = rect.left + (rect.width - width) / 2;
+    div.style.width = width;
+    div.style.height = rect.height / 2;
+
+    var stageField = document.getElementById("finalStage");
+    stageField.innerHTML = this.stage + 1;
+
+    var modeField = document.getElementById("finalMode");
+    modeField.innerHTML = this.difficulty;
+
+    var pointsField = document.getElementById("finalScore");
+    pointsField.innerHTML = this.score;
+
+    div.className = "show";
 
     this.canvas.style.opacity = 0.25;
     var timeTag = document.getElementById("timeRemaining");
