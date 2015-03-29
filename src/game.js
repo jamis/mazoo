@@ -118,6 +118,10 @@
     this.resetPauseUI();
     this.resetGameOverUI();
 
+    var timeTag = document.getElementById("timeRemaining");
+    timeTag.className = "";
+    timeTag.style.display = "block";
+
     this.canvas.style.opacity = 1.0;
     this.difficulty = difficulty;
 
