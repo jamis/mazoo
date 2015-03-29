@@ -1,186 +1,6 @@
 <html>
 <head>
-  <style type="text/css">
-    html, body {
-      margin: 0;
-      font-family: Verdana, Geneva, sans-serif;
-      font-size: 14px;
-    }
-
-    .container {
-      margin: 0 auto;
-    }
-
-    .container .body {
-      width: 50%;
-      min-width: 480px;
-      margin: 25pt auto;
-    }
-
-    #pauseCover {
-      position: fixed;
-      display: none;
-    }
-
-    .instructions {
-      background: #eee;
-      margin: 40px 25%;
-    }
-
-    td {
-      vertical-align: top;
-      text-align: center;
-    }
-
-    #pauseCover.show {
-      display: block;
-    }
-
-    #grid.hide {
-      display: none;
-    }
-
-    .footer {
-      position: fixed;
-      bottom: 0;
-      height: 50px;
-      width: 50%;
-      margin-left: 25%;
-      background: #5f3f1f;
-      border-left: 4px solid #cfaf7f;
-      border-right: 4px solid #cfaf7f;
-      border-top: 4px solid #cfaf7f;
-      color: white;
-      text-align: center;
-    }
-
-    .about {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 22%;
-      text-align: right;
-      padding: 5px 15px;
-    }
-
-    .ad {
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      width: 22%;
-      text-align: left;
-      padding: 5px 15px;
-    }
-
-    .about strong, .ad strong {
-      color: #5f3f1f;
-    }
-
-    .navigation {
-      margin-top: 5pt;
-      font-size: 10pt;
-    }
-
-    #timeRemaining {
-      font-size: 40px;
-      margin: 5px 0;
-      font-family: "Courier New", Courier, monospace;
-    }
-
-    #timeRemaining.warning {
-      color: #cc0;
-    }
-
-    #timeRemaining.alert {
-      color: #f77;
-    }
-
-    .score, .stage {
-      font-size: 20px;
-      margin-top: 20px;
-      padding: 0 10px;
-      color: #ca7;
-      font-variant: small-caps;
-    }
-
-    #score, #stage {
-      color: white;
-      font-size: 25px;
-      font-variant: normal;
-    }
-
-    .score {
-      float: left;
-    }
-
-    .stage {
-      float: right;
-    }
-
-    .panel {
-      display: none;
-    }
-
-    .panel p {
-      font-size: 14pt;
-    }
-
-    .panel p.gotit {
-      text-align: center;
-      font-size: 18pt;
-    }
-
-    .panel p.byline {
-      text-align: right;
-      font-style: italic;
-    }
-
-    .panel#intro {
-      display: block;
-    }
-
-    .panel h1 {
-      text-align: center;
-      margin-top: 25pt;
-    }
-
-    .panel h2 {
-      margin-top: 25pt;
-      text-align: center;
-    }
-
-    .panel h2.subtitle {
-      font-weight: normal;
-      margin-top: 0;
-      margin-bottom: 25pt;
-    }
-
-    ul.choices {
-      list-style-type: none;
-    }
-
-    ul.choices li {
-      margin: 5pt;
-      padding: 5pt;
-    }
-
-    ul.choices a {
-      display: block;
-      background: #c4aa76;
-      border: 2px solid #5f3f1f;
-      border-radius: 10px;
-      padding: 10pt;
-      text-align: center;
-      color: #5f3f1f;
-      text-decoration: none;
-      font-size: 150%;
-      font-weight: bold;
-    }
-
-    ul.choices a:hover {
-      background: #a48a56;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="game.css" />
 
   <script src="src/mersenne.js" type="text/javascript"></script>
   <script src="src/utility.js" type="text/javascript"></script>
@@ -196,55 +16,78 @@
     <div class="panel" id="intro">
       <div class="body">
         <h1><img src="images/mazoo-logo.png" width="397" height="196" alt="Mazoo!" title="Mazoo!" /></h1>
-        <h2 class="subtitle">A Game of Twisty Little Passages</h2>
+        <h2 class="subtitle">A Game of Twisty Little Passages by&nbsp;Jamis&nbsp;Buck</h2>
 
         <ul class="choices">
-          <li><a href="#" class="opt-easy"  >Easy</a></li>
-          <li><a href="#" class="opt-medium">Medium</a></li>
-          <li><a href="#" class="opt-hard"  >Hard</a></li>
-          <li><a href="#" class="opt-info"  >About Mazoo!</a></li>
+          <li><a href="#" data-mode="easy"  >Easy</a></li>
+          <li><a href="#" data-mode="medium">Medium</a></li>
+          <li><a href="#" data-mode="hard"  >Hard</a></li>
+          <li><a href="#" data-mode="how" class="info left">How to Play</a
+              ><a href="#" data-mode="info" class="info right">About Mazoo!</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="panel" id="info">
+    <div class="panel info" id="how">
       <div class="body">
         <div class="navigation"><a href="#" class="done">&larr; back</a></div>
 
+        <h1>What's the Point?</h1>
+
+        <p>Get to the end of as many mazes as possible, scoring as
+           many points as you can along the way. Oh, and you only
+           have sixty seconds to do so.</p>
+
+        <p>You'll encounter yellow stars and blue stars.</p>
+
+        <ul>
+          <li>First yellow star in each level: <strong>+1 point</strong></li>
+          <li>Second yellow star: <strong>+4 points</strong></li>
+          <li>Blue star: <strong>+10 seconds</strong></li>
+        </ul>
+
+        <p>Finishing a maze gives you <strong>five points</strong>.</p>
+
+        <h1>Mouse/Touchscreen</h1>
+
+        <p>Simply drag the cursor (the small brown circle) through the
+           maze. You can also tap on the adjacent highlighted squares to
+           move to them. (This is particularly handy on the 3D and 4D
+           levels, in order to navigate the stairs/portals.)</p>
+
+        <h1>Keyboard</h1>
+
+        <p>Using the keyboard is slower, but easier if you don't have a
+           mouse or touchscreen. Here, <strong><code>wasd</code></strong>
+           is your friend.</p>
+
+        <p>The <strong><code>w</code></strong> and <strong><code>s</code></strong>
+           keys move the cursor (respectively) up and down, and
+           <strong><code>a</code></strong> and <strong><code>d</code></strong>
+           move you left and right.</p>
+
+        <p>On the 3D and 4D levels, <strong><code>i</code></strong> and
+           <strong><code>k</code></strong> move you vertically between
+           levels, and <strong><code>j</code></strong> and
+           <strong><code>k</code></strong> move you horizontally.
+           (The <strong><code>ijkl</code></strong> keys will only work
+           when you are positioned on one of the red pointers.)</p>
+
+        <div class="navigation"><a href="#" class="done">&larr; back</a></div>
+      </div>
+    </div>
+
+    <div class="panel info" id="info">
+      <div class="body">
+        <div class="navigation"><a href="#" class="done">&larr; back</a></div>
+
+        <h1>What is this thing?</h1>
+
         <p>Mazoo is a maze game. The goal is to traverse as many mazes
-          as you can, accumulating as many points as possible along the
-          way. You have sixty seconds in which to accomplish this task.</p>
+          as you can, as quickly as you can, accumulating as many points
+          as possible along the way.</p>
 
-        <p>Along the way, you'll encounter yellow stars and blue stars.
-          The first yellow star in each level gives you one extra point.
-          The second gives you four points. The blue star will add an
-          extra ten seconds to your time limit.</p>
-
-        <p>Finishing a maze gives you five points.</p>
-
-        <h2>How to Play</h2>
-
-        <p>You can either use the mouse, your finger (if on a touchscreen),
-          or the keyboard.</p>
-
-        <p>If using the mouse or touchscreen, simply drag the cursor
-          through the maze. You can also tap any highlighted square to
-          be moved there. (This is particularly handy on the 3D and 4D
-          levels, to navigate the stairs/portals.)</p>
-
-        <p>If using the keyboard, <code>wasd</code> is your friend.
-          The <code>w</code> and <code>s</code> keys move you (respectively)
-          up and down, and <code>a</code> and <code>d</code> move you
-          left and right. On the 3D and 4D levels, <code>i</code> and
-          <code>k</code> move you vertically between levels, and
-          <code>j</code> and <code>k</code> move you horizontally.
-          (The <code>ijkl</code> keys will only work when you are
-          positioned on one of the red pointers.)</p>
-
-        <p>If that's all you needed to know,
-          <a href="#" class="done">go ahead and return to the menu</a>!</p>
-
-        <h2>How does this thing work?</h2>
+        <h1>How is it done?</h1>
 
         <p>The mazes are generated using the
           <a href="http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm">Growing Tree algorithm</a>,
@@ -256,24 +99,28 @@
 
         <p><a href="https://github.com/jamis/mazoo">https://github.com/jamis/mazoo</a></p>
 
-        <h2>Where can I learn more?</h2>
+        <h1>Where can I learn more?</h1>
 
-        <p>I wrote a series of articles on the topic of random mazes a
-          few years ago. They are summarized here:</p>
-
-        <p><a href="http://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap">http://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap</a></p>
-
-        <p>I've also written a book, "Mazes for Programmers", which
-          goes into the topic at greater length, and includes projects
+        <p>I've written a book, "Mazes for Programmers", which
+          goes into the topic at great length, and includes projects
           and source code and all kinds of fascinating things!</p>
 
         <p><a href="https://pragprog.com/book/jbmaze/mazes-for-programmers">https://pragprog.com/book/jbmaze/mazes-for-programmers</a></p>
 
-        <p>Cheers!</p>
+        <p>I also wrote a series of articles on the topic of random mazes a
+          few years ago. They are summarized here:</p>
 
-        <p class="byline">Jamis Buck<br />
-          <a href="mailto:jamis@jamisbuck.org">jamis@jamisbuck.org</a><br />
-          <a href="http://twitter.com/jamis">@jamis</a></p>
+        <p><a href="http://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap">http://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap</a></p>
+
+        <h1>I have more questions. Who can I talk to?</h1>
+
+        <p>My name is Jamis Buck. I check my email sometimes, at
+          <a href="mailto:jamis@jamisbuck.org">jamis@jamisbuck.org</a>.
+          I'm <a href="http://twitter.com/jamis">@jamis</a> on Twitter,
+          and you can find my code on GitHub
+          as <a href="http://github.com/jamis">jamis</a>.</p>
+
+        <div class="navigation"><a href="#" class="done">&larr; back</a></div>
       </div>
     </div>
 
@@ -281,51 +128,36 @@
       <canvas id="grid" width="500" height="500"></canvas>
       <div id="pauseCover">
         <div class="instructions">
-          <ul id="tabs">
-            <li>Goal</li>
-            <li>Movement (keyboard)</li>
-            <li>Movement (mouse/touch)</li>
+          <h1>How to Play</h1>
+
+          <p>Drag the cursor (the small brown circle) through the maze.
+            Collect yellow stars for points, and blue stars for extra time.
+            You have sixty seconds!</p>
+
+          <p>On the keyboard, use <strong><code>wasd</code></strong> to
+            move the cursor, and <strong><code>ijkl</code></strong> to
+            move between levels (when positioned on a square with red
+            arrows&mdash;only on 3D and 4D mazes).</p>
+
+          <ul class="operations">
+            <li><a href="#" data-operation="resume">Resume Game</a></li>
+            <li><a href="#" data-operation="quit">Return to Menu</a></li>
           </ul>
+        </div>
+      </div>
 
-          <p>You have five minutes to traverse as many mazes as you possibly can.  At the end of each maze, you'll immediately be taken to the next (slightly harder) random maze.</p>
+      <div id="gameOverCover">
+        <div class="instructions">
+          <h1>Great job!</h1>
 
-          <p>Pick up yellow stars for points (1 point for the first in each stage, 4 points for the second). Pick up the blue star for an extra 10 seconds on the clock.</p>
+          <p>You reached stage <span id="finalStage">?</span> on
+            <span id="finalMode">?</span> mode, and got a total of
+            <span id="finalScore">?</span> points!</p>
 
-          <p>Completing each maze will give you 5 points.</p>
-
-          <p>How far can you go? How many points can you earn?</p>
-
-          <h2>Move via keyboard&hellip;</h2>
-
-          <table><tr>
-            <td>For moving around a level:</td>
-            <td>For moving between levels<br />(following red arrows):</td>
-          </tr><tr>
-            <td>
-              <table><tr>
-                <td></td>
-                <td>&uarr;<br />w</td>
-                <th></th><td></td>
-              </tr><tr>
-                <td>&larr;a</td>
-                <td>s<br/>&darr;</td>
-                <td>d&rarr;</td>
-              </tr></table>
-            </td>
-            <td>
-              <table><tr>
-                <td></td>
-                <td>&uarr;<br />i</td>
-                <th></th><td></td>
-              </tr><tr>
-                <td>&larr;j</td>
-                <td>k<br/>&darr;</td>
-                <td>l&rarr;</td>
-              </tr></table>
-            </td>
-          </tr></table>
-
-          <h2>Move via mouse/touch&hellip;</h2>
+          <ul class="operations">
+            <li><a href="#" data-operation="restart">Play Again</a></li>
+            <li><a href="#" data-operation="quit">Return to Menu</a></li>
+          </ul>
         </div>
       </div>
 

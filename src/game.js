@@ -89,10 +89,10 @@
     this.stretchCanvas();
 
     var timeTag = document.getElementById('timeRemaining');
-    timeTag.addEventListener("click", function() { self.togglePause(); });
+    timeTag.addEventListener("click", function() { self.board.togglePause(); });
 
     var aboutTag = document.getElementById('about');
-    aboutTag.addEventListener("click", function() { self.togglePause(); });
+    aboutTag.addEventListener("click", function() { self.board.togglePause(); });
 
     var self = this;
     this.board.exitedMaze = function() { self.exitedMaze(); };
@@ -110,6 +110,14 @@
       delete(this.timer);
     }
 
+    if (this.blinkTimer) {
+      window.clearTimeout(this.blinkTimer);
+      delete(this.blinkTimer);
+    }
+
+    this.resetPauseUI();
+
+    this.canvas.style.opacity = 1.0;
     this.difficulty = difficulty;
 
     this.score = 0;
@@ -122,6 +130,7 @@
     this.board.reset(this.gridForStage(this.stage));
     this.board.refresh();
 
+    delete(this.started);
     this.countdown();
     this.refreshScore();
     this.refreshStage();
@@ -176,10 +185,14 @@
     div.className = "show";
   }
 
-  Game.prototype.userUnpausing = function() {
+  Game.prototype.resetPauseUI = function() {
     var div = document.getElementById("pauseCover");
     div.className = "hide";
     this.canvas.className = "show";
+  }
+
+  Game.prototype.userUnpausing = function() {
+    this.resetPauseUI();
     this.bonusTime = 0;
     this.started = Date.now() - this.pausedAfter;
     this.userActed();
@@ -187,6 +200,7 @@
 
   Game.prototype.gameOver = function() {
     window.clearInterval(this.timer);
+    delete(this.timer);
 
     this.canvas.style.opacity = 0.25;
     var timeTag = document.getElementById("timeRemaining");
@@ -194,6 +208,8 @@
 
     var blinkIntervals = [1, 0.5];
     var blink = -1;
+    var self = this;
+    this.blinkTimer = null;
 
     var blinkFn = function() {
       blink += 1;
@@ -203,7 +219,7 @@
       else
         timeTag.style.display = "none";
 
-      setTimeout(blinkFn, blinkIntervals[blink % blinkIntervals.length] * 1000);
+      self.blinkTimer = setTimeout(blinkFn, blinkIntervals[blink % blinkIntervals.length] * 1000);
     };
 
     blinkFn();

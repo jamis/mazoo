@@ -38,6 +38,8 @@
   }
 
   Board.prototype.reset = function(grid) {
+    this.paused = false;
+
     this.grid = grid;
     this.recomputeMetrics();
 

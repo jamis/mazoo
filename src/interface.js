@@ -10,9 +10,18 @@
     choices.addEventListener("click",
       function(event) { self.choiceClicked(event); });
 
-    var info = document.getElementById("info");
-    info.addEventListener("click",
-      function(event) { self.doneClicked(event); });
+    var anchors = document.getElementsByClassName("done");
+    for(var i = 0; i < anchors.length; i++) {
+      var anchor = anchors[i];
+      if (anchor.tagName == "A") {
+        anchor.addEventListener("click",
+          function(event) { self.doneClicked(event); });
+      }
+    }
+
+    var operations = document.getElementsByClassName("operations")[0];
+    operations.addEventListener("click",
+      function(event) { self.operationClicked(event); });
   }
 
   Interface.prototype.selectPanel = function(panel) {
@@ -30,31 +39,45 @@
     }
   }
 
+  Interface.prototype.operationClicked = function(event) {
+    event.preventDefault();
+
+    var operation = event.target.dataset.operation;
+    switch(operation) {
+      case "resume":
+        this.currentGame.board.togglePause();
+        break;
+      case "quit":
+        this.selectPanel(document.getElementById("intro"));
+        break;
+    }
+  }
+
   Interface.prototype.choiceClicked = function(event) {
     event.preventDefault();
 
-    switch(event.target.className) {
-      case "opt-easy":
-      case "opt-medium":
-      case "opt-hard":
-        var difficulty = event.target.className.slice(4);
-
+    var mode = event.target.dataset.mode;
+    switch(mode) {
+      case "easy":
+      case "medium":
+      case "hard":
         if (this.currentGame) {
-          this.currentGame.resetGame(difficulty);
+          this.currentGame.resetGame(mode);
         } else {
-          this.currentGame = new Game("grid", difficulty);
+          this.currentGame = new Game("grid", mode);
         }
 
         var board = document.getElementById("board");
         this.selectPanel(board);
         break;
-      case "opt-info":
-        var info = document.getElementById("info");
-        this.selectPanel(info);
+      case "how":
+      case "info":
+        var panel = document.getElementById(mode);
+        this.selectPanel(panel);
         break;
     }
   }
 
-  window.addEventListener("load", function() { new Interface(); });
+  window.addEventListener("load", function() { window.gameUI = new Interface(); });
 
 })(this);
