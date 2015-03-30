@@ -110,11 +110,6 @@
       delete(this.timer);
     }
 
-    if (this.blinkTimer) {
-      window.clearTimeout(this.blinkTimer);
-      delete(this.blinkTimer);
-    }
-
     this.resetPauseUI();
     this.resetGameOverUI();
 
@@ -197,6 +192,7 @@
   }
 
   Game.prototype.resetGameOverUI = function() {
+    this.killBlinker = true;
     var div = document.getElementById("gameOverCover");
     div.className = "hide";
   }
@@ -209,6 +205,7 @@
   }
 
   Game.prototype.gameOver = function() {
+    delete(this.killBlinker);
     window.clearInterval(this.timer);
     delete(this.timer);
 
@@ -238,7 +235,6 @@
     var blinkIntervals = [1, 0.5];
     var blink = -1;
     var self = this;
-    this.blinkTimer = null;
 
     var blinkFn = function() {
       blink += 1;
@@ -248,7 +244,8 @@
       else
         timeTag.style.display = "none";
 
-      self.blinkTimer = setTimeout(blinkFn, blinkIntervals[blink % blinkIntervals.length] * 1000);
+      if (!self.killBlinker)
+        setTimeout(blinkFn, blinkIntervals[blink % blinkIntervals.length] * 1000);
     };
 
     blinkFn();
