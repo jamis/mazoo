@@ -5,9 +5,9 @@
     this.active = true;
 
     var self = this;
-    document.body.addEventListener("keypress", function(event) {
-      self.onKeyPress(event);
-      event.preventDefault();
+    document.body.addEventListener("keydown", function(event) {
+      if (self.onKeyDown(event))
+        event.preventDefault();
     });
 
     this.canvas.addEventListener("mousedown", function(event) {
@@ -453,31 +453,31 @@
     }
   }
 
-  Board.prototype.onKeyPress = function(event) {
+  Board.prototype.onKeyDown = function(event) {
     var self = this;
     var char;
+    var keyCode = event.keyCode || event.which;
+    console.log("key: ", keyCode);
 
-    if (event.which == null) {
-      char = String.fromCharCode(event.keyCode) // IE
-    } else if (event.which!=0 && event.charCode!=0) {
-      char = String.fromCharCode(event.which)   // the rest
-    } else {
-      return;
+    switch(keyCode) {
+      case 27: // ESC
+      case 32: // space
+        this.togglePause(); break;
+
+      case 65: this.go("west"); break;   // A
+      case 68: this.go("east"); break;   // D
+      case 87: this.go("north"); break;  // W
+      case 83: this.go("south"); break;  // S
+
+      case 74: this.go("down"); break;   // J
+      case 76: this.go("up"); break;     // L
+      case 73: this.go("hither"); break; // I
+      case 75: this.go("yon"); break;    // K
+
+      default: return false;
     }
 
-    switch(char) {
-      case " ": this.togglePause(); break;
-
-      case "a": this.go("west"); break;
-      case "d": this.go("east"); break;
-      case "w": this.go("north"); break;
-      case "s": this.go("south"); break;
-
-      case "j": this.go("down"); break;
-      case "l": this.go("up"); break;
-      case "i": this.go("hither"); break;
-      case "k": this.go("yon"); break;
-    }
+    return true;
   }
 
   Board.prototype.emulateMouseEvent = function(event, type) {
