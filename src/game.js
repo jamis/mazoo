@@ -209,6 +209,8 @@
     window.clearInterval(this.timer);
     delete(this.timer);
 
+    this.board.paused = true;
+
     var div = document.getElementById("gameOverCover");
     var rect = this.canvas.getBoundingClientRect();
     var width = 700;

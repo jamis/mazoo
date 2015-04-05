@@ -161,13 +161,11 @@
     if (!this.hasFoundExit()) {
       // == highlight current cell ==
       var pos = position(this.current);
-      ctx.fillStyle= "#ffffdf";
-      ctx.fillStyle= "rgba(255, 255, 223, 0.75)";
+      ctx.fillStyle= "rgba(255, 255, 190, 0.75)";
       ctx.fillRect(pos.x, pos.y, this.cellWidth, this.cellHeight);
 
       // == highlight adjacent cells ==
-      ctx.fillStyle= "#fafadf";
-      ctx.fillStyle= "rgba(250, 250, 223, 0.75)";
+      ctx.fillStyle= "rgba(255, 255, 170, 0.75)";
       var exits = this.current.links();
       for(var i = 0; i < exits.length; i++) {
         var pos;
@@ -465,27 +463,28 @@
   }
 
   Board.prototype.onKeyDown = function(event) {
-    var self = this;
-    var char;
     var keyCode = event.keyCode || event.which;
-    console.log("key: ", keyCode);
 
-    switch(keyCode) {
-      case 27: // ESC
-      case 32: // space
-        this.togglePause(); break;
+    if (keyCode == 27 || keyCode == 32) {
+      this.togglePause();
 
-      case 65: this.go("west"); break;   // A
-      case 68: this.go("east"); break;   // D
-      case 87: this.go("north"); break;  // W
-      case 83: this.go("south"); break;  // S
+    } else if(!this.paused) {
+      switch(keyCode) {
+        case 65: this.go("west"); break;   // A
+        case 68: this.go("east"); break;   // D
+        case 87: this.go("north"); break;  // W
+        case 83: this.go("south"); break;  // S
 
-      case 74: this.go("down"); break;   // J
-      case 76: this.go("up"); break;     // L
-      case 73: this.go("hither"); break; // I
-      case 75: this.go("yon"); break;    // K
+        case 74: this.go("down"); break;   // J
+        case 76: this.go("up"); break;     // L
+        case 73: this.go("hither"); break; // I
+        case 75: this.go("yon"); break;    // K
 
-      default: return false;
+        default: return false;
+      }
+
+    } else {
+      return false;
     }
 
     return true;
