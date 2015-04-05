@@ -241,13 +241,16 @@
     var blinkFn = function() {
       blink += 1;
 
-      if (blink % 2 == 0)
-        timeTag.style.display = "block";
-      else
-        timeTag.style.display = "none";
+      if (!self.killBlinker) {
+        if (blink % 2 == 0)
+          timeTag.style.display = "block";
+        else
+          timeTag.style.display = "none";
 
-      if (!self.killBlinker)
         setTimeout(blinkFn, blinkIntervals[blink % blinkIntervals.length] * 1000);
+      } else {
+        timeTag.style.display = "block";
+      }
     };
 
     blinkFn();
