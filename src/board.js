@@ -149,6 +149,15 @@
       return { x: x, y: y };
     }
 
+    ctx.fillStyle = "#ffffff";
+    for(var world = 0; world < this.grid.worlds; world++) {
+      for(var level = 0; level < this.grid.levels; level++) {
+        var cell = { level: level, world: world, row: 0, column: 0 };
+        var pos = position(cell);
+        ctx.fillRect(pos.x, pos.y, this.levelWidth, this.levelHeight);
+      }
+    }
+
     if (!this.hasFoundExit()) {
       // == highlight current cell ==
       var pos = position(this.current);
