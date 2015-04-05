@@ -1,8 +1,9 @@
-html, body {
+html {
   margin: 0;
   font-family: Verdana, Geneva, sans-serif;
   font-size: 14px;
-  background: #fff0d0;
+  /* Background pattern from subtlepatterns.com */
+  background-image: url("images/swirl_pattern_beige.png");
 }
 
 .container {

@@ -149,7 +149,7 @@
       return { x: x, y: y };
     }
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
     for(var world = 0; world < this.grid.worlds; world++) {
       for(var level = 0; level < this.grid.levels; level++) {
         var cell = { level: level, world: world, row: 0, column: 0 };
@@ -162,10 +162,12 @@
       // == highlight current cell ==
       var pos = position(this.current);
       ctx.fillStyle= "#ffffdf";
+      ctx.fillStyle= "rgba(255, 255, 223, 0.75)";
       ctx.fillRect(pos.x, pos.y, this.cellWidth, this.cellHeight);
 
       // == highlight adjacent cells ==
       ctx.fillStyle= "#fafadf";
+      ctx.fillStyle= "rgba(250, 250, 223, 0.75)";
       var exits = this.current.links();
       for(var i = 0; i < exits.length; i++) {
         var pos;
