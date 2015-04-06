@@ -60,9 +60,13 @@
   }
 
   Interface.prototype.choiceClicked = function(event) {
-    event.preventDefault();
+    var findMode = function(node) {
+        while(node && !node.dataset.mode)
+          node = node.parentElement;
+        return node.dataset.mode;
+      }
 
-    var mode = event.target.dataset.mode;
+    var mode = findMode(event.target);
     switch(mode) {
       case "easy":
       case "medium":
@@ -75,11 +79,14 @@
 
         var board = document.getElementById("board");
         this.selectPanel(board);
+        event.preventDefault();
         break;
+
       case "how":
       case "info":
         var panel = document.getElementById(mode);
         this.selectPanel(panel);
+        event.preventDefault();
         break;
     }
   }

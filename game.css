@@ -247,6 +247,19 @@ ul.choices a.info.right {
   border-left: none;
 }
 
+ul.choices a .subtitle {
+  font-size: 12pt;
+  font-weight: normal;
+}
+
 ul.choices a:hover {
   background: #a48a56;
+}
+
+.yellowStar {
+  color: #afaf00;
+}
+
+.blueStar {
+  color: #0000af;
 }
