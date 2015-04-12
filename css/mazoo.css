@@ -3,7 +3,7 @@ html {
   font-family: Verdana, Geneva, sans-serif;
   font-size: 14px;
   /* Background pattern from subtlepatterns.com */
-  background-image: url("images/swirl_pattern_beige.png");
+  background-image: url("../images/swirl_pattern_beige.png");
 }
 
 .container {
