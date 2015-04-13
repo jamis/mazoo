@@ -10,8 +10,13 @@ html {
   margin: 0 auto;
 }
 
-#pauseCover, #gameOverCover {
-  position: fixed;
+#pauseCover {
+  position: absolute;
+  display: none;
+}
+
+#gameOverCover {
+  position: absolute;
   display: none;
 }
 

@@ -214,10 +214,10 @@
     var div = document.getElementById("gameOverCover");
     var rect = this.canvas.getBoundingClientRect();
     var width = 700;
-    div.style.top = rect.top + 50;
-    div.style.left = rect.left + (rect.width - width) / 2;
-    div.style.width = width;
-    div.style.height = rect.height / 2;
+    div.style.top = (rect.top + 50) + "px";
+    div.style.left = (rect.left + (rect.width - width) / 2) + "px";
+    div.style.width = width + "px";
+    div.style.height = (rect.height / 2) + "px";
 
     var stageField = document.getElementById("finalStage");
     stageField.innerHTML = this.stage + 1;
