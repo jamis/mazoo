@@ -1,3 +1,5 @@
+require 'digest/md5'
+
 MAZOOJS = "mazoo.js"
 MAZOOMINJS = "mazoo-minified.js"
 SOURCES = Rake::FileList.new("src/*.js")
@@ -7,6 +9,8 @@ BUILD_JS = File.join(BUILD, "js")
 BUILD_CSS = File.join(BUILD, "css")
 BUILD_IMG = File.join(BUILD, "images")
 BUILD_HTML = File.join(BUILD, "index.html")
+
+task default: :build
 
 desc "remove generated artifacts"
 task :clean do
@@ -38,7 +42,9 @@ file BUILD_IMG do |t|
 end
 
 file BUILD_HTML => [BUILD_JS, BUILD_CSS, BUILD_IMG] do |t|
+  md5 = Digest::MD5.hexdigest(File.read(File.join(BUILD_CSS, "mazoo.css")))
   contents = File.read("game.html").
+    sub(/CSSVERSION/, md5).
     sub(/<!--JSSTART-->.*<!--JSEND-->/m, "<script src=\"js/#{MAZOOMINJS}\" type=\"text/javascript\"></script>")
 
   if File.exists?("_analytics.html")
