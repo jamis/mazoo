@@ -9,7 +9,7 @@ Play it for free at [http://mazoo.jamisbuck.org](http://mazoo.jamisbuck.org). Ho
 
 ## Author
 
-Mazoo was developed by (Jamis Buck)[mailto:jamis@jamisbuck.org] ((@jamis)[http://twitter.com/jamis]). If you're interested in maze algorithms, check out his book: (Mazes for Programmers)[https://pragprog.com/book/jbmaze/mazes-for-programmers].
+Mazoo was developed by [Jamis Buck](mailto:jamis@jamisbuck.org) ([@jamis](http://twitter.com/jamis)). If you're interested in maze algorithms, check out his book: [Mazes for Programmers](https://pragprog.com/book/jbmaze/mazes-for-programmers).
 
 
 ## License
