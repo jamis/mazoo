@@ -521,7 +521,7 @@
   }
 
   Board.prototype.onMouseMove = function(event) {
-    if (this.touchStartX) {
+    if (this.touchStartX && !this.paused) {
       var dx = event.pageX - this.touchStartX;
       var dy = event.pageY - this.touchStartY;
 
@@ -598,7 +598,7 @@
   }
 
   Board.prototype.onMouseUp = function(event) {
-    if (this.mightBeTap) {
+    if (this.mightBeTap && !this.paused) {
       var cell = this.cellAt(event.pageX, event.pageY);
       this.goTo(cell);
     }
