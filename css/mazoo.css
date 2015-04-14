@@ -74,7 +74,7 @@ td {
   bottom: 0;
   height: 50px;
   width: 50%;
-  margin-left: 25%;
+  margin-left: calc(25% - 8px);
   background: #5f3f1f;
   border-left: 4px solid #cfaf7f;
   border-right: 4px solid #cfaf7f;
@@ -87,7 +87,7 @@ td {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 22%;
+  width: calc((50% - 68px)/2);
   text-align: right;
   padding: 5px 15px;
 }
@@ -96,13 +96,23 @@ td {
   position: fixed;
   bottom: 0;
   right: 0;
-  width: 22%;
+  width: calc((50% - 68px)/2);
   text-align: left;
   padding: 5px 15px;
 }
 
 .about strong, .ad strong {
   color: #5f3f1f;
+}
+
+.about a, .ad a {
+  color: #0000ff;
+  padding: 2px;
+}
+
+.about a:hover, .ad a:hover {
+  color: white;
+  background: rgba(128, 128, 255, 0.5);
 }
 
 .navigation {
